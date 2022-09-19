@@ -1,26 +1,121 @@
-from flask import Flask
-from pandas.plotting import scatter_matrix
-from sklearn.metrics import confusion_matrix
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import precision_score
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import f1_score
-from sklearn.model_selection import train_test_split
-import seaborn as sns
-from sklearn.metrics import classification_report
-
-import pandas as pd  # pandasのインポート
-import datetime  # 元データの日付処理のためにインポート
-from sklearn.model_selection import train_test_split  # データ分割用
-from sklearn.ensemble import RandomForestClassifier  # ランダムフォレスト
-from sklearn.metrics import f1_score
+from PyNuitrack import py_nuitrack
+import PyNuitrack
+import sys
+import cv2
+from itertools import cycle
 import numpy as np
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import japanize_matplotlib
-import pickle
+import time
+from collections import namedtuple
+import pyrealsense2 as rs
+import math
+import tifffile
+import csv
+from traceback import print_exc
+from pdb import set_trace
+import datetime
+from threading import Event, Thread
+import os
+import setproctitle
+from flask import Flask
+
+# process name
+setproctitle.setproctitle("rs_marunasu2022")
+# Setting CSV limit
+CSV_ROW_NUM = 1000
+
+skeleton_list=[]
+skeleton_list_out=[]
+event = Event()
 
 app = Flask(__name__)
+
+def skeleton_save():
+    global skeleton_list
+    global skeleton_list_out
+
+    while True:
+        event.wait()
+        event.clear()
+
+        timestamp = datetime.datetime.now()
+        csv_dirname = "server_side/skelton_csv" + timestamp.strftime("%Y%m%d")
+        if not os.path.exists(csv_dirname):
+            os.makedirs(csv_dirname)
+        csv_filename = timestamp.strftime("%Y%m%d_%H%M%S")
+        print("csv export ...", csv_dirname + "/rsdata_" + csv_filename + ".csv")
+        with open("{}/rsdata_{}.csv".format(csv_dirname, csv_filename), 'w') as file:
+            w = csv.writer(file, lineterminator='\n')
+            w.writerows(skeleton_list_out)
+
+def run():
+    global skeleton_list
+    global skeleton_list_out
+    try:
+        nuitrack = py_nuitrack.Nuitrack()
+        nuitrack.init()
+
+        # Change number of userID
+        nuitrack.set_config_value("Skeletonization.ActiveUsers", "6")
+
+        devices = nuitrack.get_device_list()
+        for i, dev in enumerate(devices):
+            print(dev.get_name(), dev.get_serial_number())
+            if i == 0:
+                dev.activate("license:40319:HcjLYX5Bj5QEqBSX") #you can activate device using python api
+                print(dev.get_activation())
+                nuitrack.set_device(dev)
+
+        nuitrack.create_modules()
+        nuitrack.run()
+
+        modes = cycle(["depth", "color"])
+        mode = next(modes)
+        skeleton_list = []
+
+        while True:
+            key = cv2.waitKey(1)
+            nuitrack.update()
+            data = nuitrack.get_skeleton()
+            data_instance = nuitrack.get_instance()
+            img_depth = nuitrack.get_depth_data()
+            if img_depth.size:
+                cv2.normalize(img_depth, img_depth, 0, 255, cv2.NORM_MINMAX)
+                img_depth = np.array(cv2.cvtColor(img_depth,cv2.COLOR_GRAY2RGB), dtype=np.uint8)
+                img_color = nuitrack.get_color_data()
+                point_color = (59, 164, 0)
+                timestamp = datetime.datetime.now()
+
+                for skel in data.skeletons:
+                    id_ = skel.user_id
+                    pre_skeleton_list = []
+
+                    for el in skel[1:]:
+                        x = (round(el.projection[0]), round(el.projection[1]))
+                        xlabel = el.projection[0]
+                        ylabel = el.projection[1]
+                        zlabel = el.projection[2]
+                        pre_skeleton_list += [xlabel, ylabel, zlabel]
+                        cv2.circle(img_depth, x, 8, point_color, -1)
+
+                    skeleton_list.append([timestamp, id_, *pre_skeleton_list])
+
+                if len(skeleton_list) > CSV_ROW_NUM:
+                    skeleton_list_out = skeleton_list.copy()
+                    skeleton_list = []
+                    event.set()
+                if key == 32:
+                    mode = next(modes)
+                if mode == "depth":
+                    cv2.imshow('Image', img_depth)
+                if mode == "color":
+                    if img_color.size:
+                        cv2.imshow('Image', img_color)
+            if key == 27:
+                break
+        nuitrack.release()
+
+    except Exception as ex:
+        print_exc()
 
 
 @app.route('/')
@@ -30,10 +125,13 @@ def index():
 
 @app.route('/model')
 def tmp():
-    clf = pickle.load(open('server_side/trained_model.pkl', 'rb'))
-    
     return 'aaaaa'
 
 
 if __name__ == "__main__":
+    t1 = Thread(target=run)
+    t2 = Thread(target=skeleton_save)
+
+    t1.start()
+    t2.start()
     app.run(debug=True)
