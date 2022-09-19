@@ -18,65 +18,112 @@ class _LineChartSample2State extends State<LineChartSample2> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Stack(
-        children: <Widget>[
-          AspectRatio(
-            aspectRatio: 1.70,
-            child: Container(
-              decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(18),
-                  ),
-                  color: Color(0xff232d37)),
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    right: 18.0, left: 12.0, top: 24, bottom: 12),
-                child: LineChart(
-                  showAvg ? avgData() : mainData(),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            width: 60,
-            height: 34,
-            child: TextButton(
-              onPressed: () {
-                setState(() {
-                  showAvg = !showAvg;
-                });
-              },
-              child: Text(
-                'avg',
-                style: TextStyle(
-                    fontSize: 12,
-                    color:
-                        showAvg ? Colors.white.withOpacity(0.5) : Colors.white),
-              ),
-            ),
-          ),
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        backgroundColor: Color(0xff02d39a),
       ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            graph_template(),
+            description_card(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Card description_card() {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Container(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '集中レベルモニタリング',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '集中レベルをモニタリングすることで，集中の程度を確認できます．集中力が乱れている場合，適度な休憩をとる必要があります．',
+              style: TextStyle(fontSize: 15),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Stack graph_template() {
+    return Stack(
+      children: <Widget>[
+        AspectRatio(
+          aspectRatio: 1.70,
+          child: Container(
+            decoration: const BoxDecoration(
+                borderRadius: BorderRadius.all(
+                  Radius.circular(0),
+                ),
+                color: Color(0xffffffff)),
+            child: Padding(
+              padding: const EdgeInsets.only(
+                  right: 18.0, left: 12.0, top: 24, bottom: 12),
+              child: LineChart(
+                showAvg ? avgData() : mainData(),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(
+          width: 60,
+          height: 34,
+          child: TextButton(
+            onPressed: () {
+              setState(() {
+                showAvg = !showAvg;
+              });
+            },
+            child: Text(
+              'avg',
+              style: TextStyle(
+                  fontSize: 12,
+                  color:
+                      showAvg ? Colors.white.withOpacity(0.5) : Colors.white),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
     const style = TextStyle(
-      color: Color(0xffffffff),
+      color: Color(0xff67727d),
       fontWeight: FontWeight.bold,
       fontSize: 16,
     );
     Widget text;
     switch (value.toInt()) {
+      case 1:
+        text = const Text('', style: style);
+        break;
       case 2:
-        text = const Text('MAR', style: style);
+        text = const Text('15分前', style: style);
         break;
       case 5:
-        text = const Text('JUN', style: style);
+        text = const Text('10分前', style: style);
         break;
       case 8:
-        text = const Text('SEP', style: style);
+        text = const Text('5分前', style: style);
         break;
       default:
         text = const Text('', style: style);
@@ -99,13 +146,13 @@ class _LineChartSample2State extends State<LineChartSample2> {
     String text;
     switch (value.toInt()) {
       case 1:
-        text = '10K';
+        text = '10';
         break;
       case 3:
-        text = '30k';
+        text = '50';
         break;
       case 5:
-        text = '50k';
+        text = '100';
         break;
       default:
         return Container();
