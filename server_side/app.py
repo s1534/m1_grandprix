@@ -21,13 +21,17 @@ from flask import Flask
 # process name
 setproctitle.setproctitle("rs_marunasu2022")
 # Setting CSV limit
-CSV_ROW_NUM = 1000
+CSV_ROW_NUM = 150
 
 skeleton_list=[]
 skeleton_list_out=[]
 event = Event()
 
 app = Flask(__name__)
+
+def eval_skelton():
+    print('ここまでのものを評価します')
+
 
 def skeleton_save():
     global skeleton_list
