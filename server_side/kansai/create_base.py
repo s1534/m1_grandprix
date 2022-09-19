@@ -37,11 +37,7 @@ for i in label:
     for j in label_positions_diff:
         label_label.append(i+'_'+j)
 
-# for i in label:
-#     for j in label_positions_var:
-#         label_label.append(i+'_'+j)
-
-print(label_label)
-with open('dataset4.csv', 'w', newline="") as write_file:
+# print(label_label)
+with open('server_side/kansai/dataset.csv', 'w', newline="") as write_file:
     writer = csv.writer(write_file)
     writer.writerow(label_label)

@@ -80,7 +80,7 @@ for input_file_name in list_path:
 
     # First, open the old CSV file in append mode, hence mentioned as 'a'
     # Then, for the CSV file, create a file object
-    with open('dataset4.csv', 'a', newline='') as f_object:
+    with open('dataset.csv', 'a', newline='') as f_object:
         # Pass the CSV  file object to the writer() function
         writer_object = writer(f_object)
         # Result - a writer object

@@ -20,7 +20,7 @@ import japanize_matplotlib
 import pickle
 
 
-df = pd.read_csv(r"dataset4.csv")
+df = pd.read_csv(r"dataset.csv")
 # df = pd.read_csv(r"micro_train_data/walking/write_test.csv")
 
 # print(df.shape)
