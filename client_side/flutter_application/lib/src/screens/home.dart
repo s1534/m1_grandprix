@@ -13,7 +13,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreen extends State<HomeScreen> {
   String data = "aaaaa";
-  Future getData() async{
+  Future<void> getData() async {
     // http.Response response;
 
     final response = await http.get(Uri.parse("http://127.0.0.1:5000/model"));
@@ -29,6 +29,18 @@ class _HomeScreen extends State<HomeScreen> {
         data = "aaaaaaaaaaaaaaaaaaaaaaa";
       });
     }
+  }
+
+  Future<void> _callAPI() async {
+    // var url = Uri.parse(
+    //   'https://raw.githubusercontent.com/dev-yakuza/users/master/api.json',
+    // );
+    var url = Uri.parse(
+      'http://10.0.2.2:5000/model',
+    );
+    var response = await http.get(url);
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
   }
 
   @override
@@ -50,7 +62,7 @@ class _HomeScreen extends State<HomeScreen> {
                 onPrimary: Colors.white,
               ),
               onPressed: () {
-                getData();
+                _callAPI();
                 // setState(() {
                 //   // data = jsonDecode(response.body);
                 //   data = "aaaaaaaaaaaaaaaaaaaaaaa";

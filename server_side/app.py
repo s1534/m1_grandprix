@@ -16,7 +16,7 @@ import datetime
 from threading import Event, Thread
 import os
 import setproctitle
-from flask import Flask,jsonify
+from flask import Flask, render_template, request, make_response, jsonify
 import maesyori
 import pandas as pd
 
@@ -150,7 +150,7 @@ def index():
 
 @app.route('/model', methods=["GET"])
 def tmp():
-    return jsonify(eval_json)
+    return make_response(jsonify(eval_json))
     # return jsonify({"language": "python"})
 
 
