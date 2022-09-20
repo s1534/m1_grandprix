@@ -148,7 +148,7 @@ def index():
     return 'Hello World'
 
 
-@app.route('/model')
+@app.route('/model', methods=["GET"])
 def tmp():
     return jsonify(eval_json)
     # return jsonify({"language": "python"})

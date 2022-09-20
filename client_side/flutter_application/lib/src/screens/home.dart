@@ -13,10 +13,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreen extends State<HomeScreen> {
   String data = "aaaaa";
-  Future<dynamic> getData() async {
-    http.Response response;
+  Future getData() async{
+    // http.Response response;
 
-    response = await http.get(Uri.parse('http://127.0.0.1:5000/model'));
+    final response = await http.get(Uri.parse("http://127.0.0.1:5000/model"));
     // print(response.statusCode);
     // setState(() {
     //     // data = jsonDecode(response.body);
