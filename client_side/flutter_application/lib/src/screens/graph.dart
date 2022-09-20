@@ -1,5 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class LineChartSample2 extends StatefulWidget {
   const LineChartSample2({Key? key}) : super(key: key);
@@ -16,21 +18,104 @@ class _LineChartSample2State extends State<LineChartSample2> {
 
   bool showAvg = false;
 
+  int NUM = 6;
+
+  Map<String, dynamic> user = {
+    'evals': [0, 20, 40, 60, 80, 100]
+  };
+
+  var evals = <FlSpot>[
+    FlSpot(0, 3.44),
+    FlSpot(10, 3.44),
+    FlSpot(20, 23),
+    FlSpot(30, 44),
+    FlSpot(40, 55),
+    FlSpot(50, 98),
+  ];
+
+  // final List<FlSpot> evals = [
+  //   FlSpot(0, 3.44),
+  //   FlSpot(10, 3.44),
+  //   FlSpot(20, 23),
+  //   FlSpot(30, 44),
+  //   FlSpot(40, 55),
+  //   FlSpot(50, 98),
+  // ];
+
+  Future<void> _callAPI() async {
+    var url = Uri.parse(
+      'http://10.0.2.2:5000/model',
+    );
+    var response = await http.get(url);
+    if (response.statusCode == 200) {
+      print(evals);
+
+      setState(() {
+        // data = response.statusCode.toString();
+        user = json.decode(response.body);
+        evals = <FlSpot>[];
+        for (var i = 0; i < NUM; i++) {
+          // print(user['evals'][i]);
+          evals.insert(
+              i, FlSpot((i * 10).toDouble(), (user['evals'][i]).toDouble()));
+          // evals.insert(i,FlSpot((i*10).toDouble(), 98));
+        }
+        // print(evals);
+      });
+    }
+    // print('Response status: ${response.statusCode}');
+    // print('Response body: ${response.body}');
+    print(user);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        backgroundColor: Color(0xff02d39a),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            graph_template(),
-            description_card(),
-          ],
-        ),
+          // Here we take the value from the MyHomePage object that was created by
+          // the App.build method, and use it to set our appbar title.
+          backgroundColor: Color(0xff02d39a),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.autorenew),
+              onPressed: () => setState(() {
+                _callAPI();
+              }),
+            ),
+          ]),
+      // body: RefreshIndicator(
+      //   child: LayoutBuilder(
+      //     builder: (context, constraints) => SingleChildScrollView(
+      //       physics: AlwaysScrollableScrollPhysics(),
+      //       child: ConstrainedBox(
+      //         constraints: BoxConstraints(minHeight: constraints.maxHeight),
+      //         child: SingleChildScrollView(
+      //           child: Column(
+      //             children: [
+      //               graph_template(),
+      //               description_card(),
+      //               // description_card(),
+      //               // description_card(),
+      //               // description_card(),
+      //             ],
+      //           ),
+      //         ),
+      //       ),
+      //     ),
+      //   ),
+      //   onRefresh: () async {
+      //     // スワイプ時に更新したい処理を書く
+      //     await _callAPI();
+      //   },
+      // ),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await _callAPI();
+        },
+        child: ListView(children: <Widget>[
+          graph_template(),
+          description_card(),
+        ]),
       ),
     );
   }
@@ -67,7 +152,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
     return Stack(
       children: <Widget>[
         AspectRatio(
-          aspectRatio: 1.70,
+          aspectRatio: 1.1,
           child: Container(
             decoration: const BoxDecoration(
                 borderRadius: BorderRadius.all(
@@ -97,7 +182,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
               style: TextStyle(
                   fontSize: 12,
                   color:
-                      showAvg ? Colors.white.withOpacity(0.5) : Colors.white),
+                      showAvg ? Colors.black.withOpacity(0.5) : Colors.black),
             ),
           ),
         ),
@@ -113,17 +198,17 @@ class _LineChartSample2State extends State<LineChartSample2> {
     );
     Widget text;
     switch (value.toInt()) {
-      case 1:
-        text = const Text('', style: style);
-        break;
-      case 2:
+      case 0:
         text = const Text('15分前', style: style);
         break;
-      case 5:
+      case 33:
         text = const Text('10分前', style: style);
         break;
-      case 8:
+      case 66:
         text = const Text('5分前', style: style);
+        break;
+      case 99:
+        text = const Text('0分前', style: style);
         break;
       default:
         text = const Text('', style: style);
@@ -145,13 +230,13 @@ class _LineChartSample2State extends State<LineChartSample2> {
     );
     String text;
     switch (value.toInt()) {
-      case 1:
-        text = '10';
+      case 0:
+        text = '0';
         break;
-      case 3:
+      case 50:
         text = '50';
         break;
-      case 5:
+      case 100:
         text = '100';
         break;
       default:
@@ -166,8 +251,8 @@ class _LineChartSample2State extends State<LineChartSample2> {
       gridData: FlGridData(
         show: true,
         drawVerticalLine: true,
-        horizontalInterval: 1,
-        verticalInterval: 1,
+        horizontalInterval: 10,
+        verticalInterval: 10,
         getDrawingHorizontalLine: (value) {
           return FlLine(
             color: const Color(0xff37434d),
@@ -210,20 +295,12 @@ class _LineChartSample2State extends State<LineChartSample2> {
           show: true,
           border: Border.all(color: const Color(0xff37434d), width: 1)),
       minX: 0,
-      maxX: 11,
+      maxX: 100,
       minY: 0,
-      maxY: 6,
+      maxY: 100,
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 3),
-            FlSpot(2.6, 2),
-            FlSpot(4.9, 5),
-            FlSpot(6.8, 3.1),
-            FlSpot(8, 4),
-            FlSpot(9.5, 3),
-            FlSpot(11, 4),
-          ],
+          spots: evals,
           isCurved: true,
           gradient: LinearGradient(
             colors: gradientColors,
@@ -300,7 +377,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
           show: true,
           border: Border.all(color: const Color(0xff37434d), width: 1)),
       minX: 0,
-      maxX: 11,
+      maxX: 30,
       minY: 0,
       maxY: 6,
       lineBarsData: [

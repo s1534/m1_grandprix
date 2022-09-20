@@ -32,13 +32,15 @@ class _HomeScreen extends State<HomeScreen> {
   }
 
   Future<void> _callAPI() async {
-    // var url = Uri.parse(
-    //   'https://raw.githubusercontent.com/dev-yakuza/users/master/api.json',
-    // );
     var url = Uri.parse(
       'http://10.0.2.2:5000/model',
     );
     var response = await http.get(url);
+    if (response.statusCode == 200) {
+      setState(() {
+        data = response.statusCode.toString();
+      });
+    }
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
   }
@@ -63,10 +65,6 @@ class _HomeScreen extends State<HomeScreen> {
               ),
               onPressed: () {
                 _callAPI();
-                // setState(() {
-                //   // data = jsonDecode(response.body);
-                //   data = "aaaaaaaaaaaaaaaaaaaaaaa";
-                // });
                 // Navigator.push(
                 //   context,
                 //   MaterialPageRoute(builder: (context) => NextPage()),
