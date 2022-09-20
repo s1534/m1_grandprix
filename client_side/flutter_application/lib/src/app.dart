@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'screens/account.dart';
 import 'screens/bookmark.dart';
 import 'screens/home.dart';
-import 'screens/notification.dart';
 import 'screens/graph.dart';
 
 class MyApp extends StatelessWidget {

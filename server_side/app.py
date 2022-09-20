@@ -16,7 +16,9 @@ import datetime
 from threading import Event, Thread
 import os
 import setproctitle
-from flask import Flask
+from flask import Flask,jsonify
+import maesyori
+import pandas as pd
 
 # process name
 setproctitle.setproctitle("rs_marunasu2022")
@@ -29,7 +31,14 @@ event = Event()
 
 app = Flask(__name__)
 
+eval_json = {
+    "evals" :[
+        0,20,40,60,80,100
+    ]
+}
+
 def eval_skelton():
+    global eval_json
     print('ここまでのものを評価します')
 
 
@@ -38,18 +47,29 @@ def skeleton_save():
     global skeleton_list_out
 
     while True:
+        # ↓内部フラグの値がtrueになるまでブロックする
         event.wait()
+        # ↓内部フラグをfalseにする
         event.clear()
 
         timestamp = datetime.datetime.now()
-        csv_dirname = "server_side/skelton_csv" + timestamp.strftime("%Y%m%d")
-        if not os.path.exists(csv_dirname):
-            os.makedirs(csv_dirname)
+        # csv_dirname = "server_side/skelton_csv" + timestamp.strftime("%Y%m%d")
+        csv_dirname = "server_side/skelton_csv"
+        # if not os.path.exists(csv_dirname):
+        #     os.makedirs(csv_dirname)
         csv_filename = timestamp.strftime("%Y%m%d_%H%M%S")
-        print("csv export ...", csv_dirname + "/rsdata_" + csv_filename + ".csv")
-        with open("{}/rsdata_{}.csv".format(csv_dirname, csv_filename), 'w') as file:
-            w = csv.writer(file, lineterminator='\n')
-            w.writerows(skeleton_list_out)
+        # print("csv export ...", csv_dirname + "/rsdata_" + csv_filename + ".csv")
+        # with open("{}/data_set.csv".format(csv_dirname, csv_filename), 'w') as file:
+        #     w = csv.writer(file, lineterminator='\n')
+        #     w.writerows(skeleton_list_out)
+        df = pd.DataFrame(skeleton_list_out)
+        # df = df.drop(df.columns[0],axis = 1)
+        # df = df.drop(df.index[0],axis = 0)
+
+        df.to_excel('server_side/skelton_csv/dataset.xlsx',index=False, header=False)
+
+        maesyori.main()
+
 
 def run():
     global skeleton_list
@@ -106,6 +126,7 @@ def run():
                 if len(skeleton_list) > CSV_ROW_NUM:
                     skeleton_list_out = skeleton_list.copy()
                     skeleton_list = []
+                    # ↓内部フラグをtrueにする
                     event.set()
                 if key == 32:
                     mode = next(modes)
@@ -129,13 +150,15 @@ def index():
 
 @app.route('/model')
 def tmp():
-    return 'aaaaa'
+    return jsonify(eval_json)
+    # return jsonify({"language": "python"})
+
 
 
 if __name__ == "__main__":
-    t1 = Thread(target=run)
-    t2 = Thread(target=skeleton_save)
+    # t1 = Thread(target=run)
+    # t2 = Thread(target=skeleton_save)
 
-    t1.start()
-    t2.start()
+    # t1.start()
+    # t2.start()
     app.run(debug=True)

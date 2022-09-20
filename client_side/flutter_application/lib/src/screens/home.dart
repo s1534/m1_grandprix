@@ -14,4 +14,6 @@ class HomeScreen extends StatelessWidget {
           const Center(child: Text('temp画面', style: TextStyle(fontSize: 32.0))),
     );
   }
+
+  
 }
