@@ -1,3 +1,5 @@
+# テストデータのひな型を作るプログラム
+
 import csv
 label = ['head',
          'neck',
@@ -38,6 +40,6 @@ for i in label:
         label_label.append(i+'_'+j)
 
 # print(label_label)
-with open('server_side/kansai/dataset.csv', 'w', newline="") as write_file:
+with open('server_side/sample.csv', 'w', newline="") as write_file:
     writer = csv.writer(write_file)
     writer.writerow(label_label)

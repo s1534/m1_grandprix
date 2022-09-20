@@ -5,8 +5,8 @@ import pathlib
 from cv2 import norm
 import pandas as pd
 
-path_dir = r"micro_activity_dataset_kai/sitting"
-ext_file = r"*.xlsx"
+path_dir = r"server_side/skelton_csv"
+ext_file = r"*.csv"
 list_path = list(pathlib.Path(path_dir).glob(ext_file))
 
 kakunin = []
@@ -14,13 +14,8 @@ refer_list = []
 
 
 for input_file_name in list_path:
-    # print(i)
 
-    # input file name
-    # input_file_name = 'micro_activity_dataset/walking/walking_3.xlsx'
-    # input_file_name = 'micro_activity_dataset/walking/walking_3.xlsx'
     df = pd.read_excel(input_file_name, index_col=0)
-    # print(df)
 
     l_2d = df.values.tolist()
     normalize = []
@@ -32,9 +27,7 @@ for input_file_name in list_path:
             cordinates[j] -= torso_cordinate[j % 3]
 
         normalize.append(cordinates)
-    # print(syorigo)
 
-    # print(len(normalize))
 
     normalize = normalize[:34]
     print(len(normalize))
@@ -74,18 +67,13 @@ for input_file_name in list_path:
     for i in range(len(cordinate_sum)):
         cordinate_avg[i] = cordinate_sum[i]/len(normalize)
     write_row = []
-    write_rows = write_row+['walking']+distance_diff+positions_avg
+    write_rows = write_row+['num']+distance_diff+positions_avg
 
     # Pre-requisite - The CSV file should be manually closed before running this code.
 
     # First, open the old CSV file in append mode, hence mentioned as 'a'
     # Then, for the CSV file, create a file object
-    with open('dataset.csv', 'a', newline='') as f_object:
-        # Pass the CSV  file object to the writer() function
+    with open('sample.csv', 'a', newline='') as f_object:
         writer_object = writer(f_object)
-        # Result - a writer object
-        # Pass the data in the list as an argument into the writerow() function
         writer_object.writerow(write_rows)
-        # Close the file object
         f_object.close()
-    print(len(normalize))
