@@ -40,6 +40,8 @@ eval_json = {
 def eval_skelton():
     global eval_json
     print('ここまでのものを評価します')
+    df = pd.read_csv(r"dataset.csv")
+
 
 
 def skeleton_save():

@@ -52,8 +52,8 @@ train_y = df['action_label']
     train_x, train_y, test_size=0.3, random_state=42, shuffle=False)
 
 print('=============最初=======================')
-print(train_x.head())
-print(train_y.head())
+print(train_x)
+print(train_y)
 
 # 機械学習のモデルを作成するトレーニング用と評価用の2種類に分割する
 train_x_walking = df_walking.drop(['action_label'], axis=1)  # 説明変数のみにする
