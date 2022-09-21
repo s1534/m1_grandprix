@@ -35,7 +35,7 @@ def skeleton_save():
         event.clear()
 
         timestamp = datetime.datetime.now()
-        csv_dirname = "server_side/skelton_csv" + timestamp.strftime("%Y%m%d")
+        csv_dirname = "server_side/skelton_csv" + "_60"
         if not os.path.exists(csv_dirname):
             os.makedirs(csv_dirname)
         csv_filename = timestamp.strftime("%Y%m%d_%H%M%S")

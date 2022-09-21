@@ -19,6 +19,9 @@ import setproctitle
 from flask import Flask, render_template, request, make_response, jsonify
 import maesyori
 import pandas as pd
+import pickle
+from collections import deque
+
 
 # process name
 setproctitle.setproctitle("rs_marunasu2022")
@@ -37,12 +40,19 @@ eval_json = {
     ]
 }
 
+values = [0,20,40,60,80,100]
+
+evals = deque()
+
 def eval_skelton():
     global eval_json
     print('ここまでのものを評価します')
-    df = pd.read_csv(r"dataset.csv")
-
-
+    df = pd.read_csv(r"server_side/test_data/sample.csv")
+    test_x = df.drop(['action_label'],axis=1)
+    file = 'server_side/train_model/trained_model.pkl'
+    random_forest_model = pickle.load(open(file,'rb'))
+    predict = random_forest_model.predict(test_x)
+    evals.append(values[predict])
 
 def skeleton_save():
     global skeleton_list
@@ -163,4 +173,5 @@ if __name__ == "__main__":
 
     # t1.start()
     # t2.start()
-    app.run(debug=True)
+    # app.run(debug=True)
+    eval_skelton()
