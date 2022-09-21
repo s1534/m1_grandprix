@@ -48,7 +48,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
     );
     var response = await http.get(url);
     if (response.statusCode == 200) {
-      print(evals);
+      print(response.body);
 
       setState(() {
         // data = response.statusCode.toString();

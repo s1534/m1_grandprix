@@ -16,12 +16,12 @@ import datetime
 from threading import Event, Thread
 import os
 import setproctitle
-from flask import Flask, render_template, request, make_response, jsonify
+from flask import Flask, render_template, request, make_response, jsonify,session
 import maesyori
 import pandas as pd
 import pickle
 from collections import deque
-
+import json
 
 # process name
 setproctitle.setproctitle("rs_marunasu2022")
@@ -32,7 +32,8 @@ skeleton_list=[]
 skeleton_list_out=[]
 event = Event()
 
-app = Flask(__name__)
+
+session["aaa"] = "aaaa"
 
 eval_json = {
     "evals" :[
@@ -40,19 +41,28 @@ eval_json = {
     ]
 }
 
-values = [0,20,40,60,80,100]
 
-evals = deque()
+# values = [0,20,40,60,80,100]
+values = [0] * 15
+evals = deque(values)
+
+file = 'server_side/train_model/trained_model.pkl'
+random_forest_model = pickle.load(open(file,'rb'))
+
+app = Flask(__name__)
+
 
 def eval_skelton():
     global eval_json
+    global evals
     print('ここまでのものを評価します')
     df = pd.read_csv(r"server_side/test_data/sample.csv")
     test_x = df.drop(['action_label'],axis=1)
-    file = 'server_side/train_model/trained_model.pkl'
-    random_forest_model = pickle.load(open(file,'rb'))
     predict = random_forest_model.predict(test_x)
-    evals.append(values[predict])
+    evals.append(predict[0])
+    evals.popleft()
+    session["evals"]["evals"] = list(evals)
+    print("値を更新しました:",session["evals"])
 
 def skeleton_save():
     global skeleton_list
@@ -81,7 +91,9 @@ def skeleton_save():
         df.to_excel('server_side/skelton_csv/dataset.xlsx',index=False, header=False)
 
         maesyori.main()
-
+        eval_skelton()
+        # print(evals)
+        
 
 def run():
     global skeleton_list
@@ -162,16 +174,18 @@ def index():
 
 @app.route('/model', methods=["GET"])
 def tmp():
-    return make_response(jsonify(eval_json))
+    print(eval_json)
+    return jsonify(eval_json)
+    # return json.dumps(eval_json_dash)
     # return jsonify({"language": "python"})
 
 
 
 if __name__ == "__main__":
-    # t1 = Thread(target=run)
-    # t2 = Thread(target=skeleton_save)
+    t1 = Thread(target=run)
+    t2 = Thread(target=skeleton_save)
 
-    # t1.start()
-    # t2.start()
-    # app.run(debug=True)
-    eval_skelton()
+    t1.start()
+    t2.start()
+    app.run(debug=True)
+    # eval_skelton()

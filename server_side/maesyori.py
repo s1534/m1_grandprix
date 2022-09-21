@@ -9,7 +9,6 @@ import csv
 
 def main():
     create_base()
-    # convert_csv_to_xlsx()
     prepro()
     print('テストデータ作成完了')
 
@@ -52,21 +51,6 @@ def create_base():
     with open('server_side/test_data/sample.csv', 'w', newline="") as write_file:
         writer = csv.writer(write_file)
         writer.writerow(label_label)
-
-# データセットをcsv→xlsxに変換
-def convert_csv_to_xlsx():
-    csv_path = 'server_side/data_set/dataset.csv'
-    excel_path = 'server_side/data_set/dataset.xlsx'
-
-    wb = openpyxl.Workbook()
-    ws = wb.active
-
-    with open(csv_path) as f:
-        reader = csv.reader(f, delimiter=',')
-        for row in reader:
-            ws.append(row)
-
-    wb.save(excel_path)
 
 # データセットの前処理を行う
 def prepro():

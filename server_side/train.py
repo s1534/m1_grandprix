@@ -70,7 +70,7 @@ def convert_csv_to_xlsx():
     wb.save(excel_path)
 
 def prepro2():
-    path_dir = r"server_side/skelton_csv_0"
+    path_dir = r"server_side/skelton_csv_100"
     ext_file = r"*.csv"
     list_path = list(pathlib.Path(path_dir).glob(ext_file))
     print(list_path)
@@ -138,7 +138,7 @@ def prepro2():
             for i in range(len(cordinate_sum)):
                 cordinate_avg[i] = cordinate_sum[i]/len(normalize_dash)
             write_row = []
-            write_rows = write_row+['0']+distance_diff+positions_avg
+            write_rows = write_row+['100']+distance_diff+positions_avg
 
             # Pre-requisite - The CSV file should be manually closed before running this code.
 
