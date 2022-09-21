@@ -13,24 +13,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreen extends State<HomeScreen> {
   String data = "aaaaa";
-  Future<void> getData() async {
-    // http.Response response;
-
-    final response = await http.get(Uri.parse("http://127.0.0.1:5000/model"));
-    // print(response.statusCode);
-    // setState(() {
-    //     // data = jsonDecode(response.body);
-    //     data = response.statusCode.toString();
-    //   });
-
-    if (response.statusCode == 200) {
-      setState(() {
-        // data = jsonDecode(response.body);
-        data = "aaaaaaaaaaaaaaaaaaaaaaa";
-      });
-    }
-  }
-
   Future<void> _callAPI() async {
     var url = Uri.parse(
       'http://10.0.2.2:5000/model',
@@ -38,7 +20,7 @@ class _HomeScreen extends State<HomeScreen> {
     var response = await http.get(url);
     if (response.statusCode == 200) {
       setState(() {
-        data = response.statusCode.toString();
+        data = response.body.toString();
       });
     }
     print('Response status: ${response.statusCode}');

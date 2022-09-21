@@ -18,7 +18,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
 
   bool showAvg = false;
 
-  int NUM = 6;
+  int NUM = 15;
 
   Map<String, dynamic> user = {
     'evals': [0, 20, 40, 60, 80, 100]
@@ -52,7 +52,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
 
       setState(() {
         // data = response.statusCode.toString();
-        user = json.decode(response.body);
+        var user = json.decode(response.body);
         evals = <FlSpot>[];
         for (var i = 0; i < NUM; i++) {
           // print(user['evals'][i]);
@@ -65,7 +65,6 @@ class _LineChartSample2State extends State<LineChartSample2> {
     }
     // print('Response status: ${response.statusCode}');
     // print('Response body: ${response.body}');
-    print(user);
   }
 
   @override

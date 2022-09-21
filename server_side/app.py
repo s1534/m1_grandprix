@@ -16,12 +16,15 @@ import datetime
 from threading import Event, Thread
 import os
 import setproctitle
-from flask import Flask, render_template, request, make_response, jsonify,session
+from flask import Flask, render_template, request, make_response, jsonify,g
 import maesyori
 import pandas as pd
 import pickle
 from collections import deque
 import json
+
+app = Flask(__name__)
+
 
 # process name
 setproctitle.setproctitle("rs_marunasu2022")
@@ -32,14 +35,12 @@ skeleton_list=[]
 skeleton_list_out=[]
 event = Event()
 
-
-session["aaa"] = "aaaa"
-
 eval_json = {
     "evals" :[
         0,20,40,60,80,100
     ]
 }
+# aiueo = 1111111110
 
 
 # values = [0,20,40,60,80,100]
@@ -48,8 +49,6 @@ evals = deque(values)
 
 file = 'server_side/train_model/trained_model.pkl'
 random_forest_model = pickle.load(open(file,'rb'))
-
-app = Flask(__name__)
 
 
 def eval_skelton():
@@ -61,8 +60,13 @@ def eval_skelton():
     predict = random_forest_model.predict(test_x)
     evals.append(predict[0])
     evals.popleft()
-    session["evals"]["evals"] = list(evals)
-    print("値を更新しました:",session["evals"])
+    eval_json["evals"] = list(evals)
+    # print("更新しました",eval_json)
+
+    with open('server_side/tmp.txt', 'w') as f:
+        for d in eval_json["evals"]:
+            f.write("%s\n" % d)
+        
 
 def skeleton_save():
     global skeleton_list
@@ -92,7 +96,7 @@ def skeleton_save():
 
         maesyori.main()
         eval_skelton()
-        # print(evals)
+        print("aaaaaaaaaaaaa",eval_json)
         
 
 def run():
@@ -172,10 +176,18 @@ def index():
     return 'Hello World'
 
 
-@app.route('/model', methods=["GET"])
+@app.route('/model')
 def tmp():
-    print(eval_json)
-    return jsonify(eval_json)
+    with open('server_side/tmp.txt') as f:
+        lines = f.readlines()
+
+        lines = [line.rstrip('\n') for line in lines]
+    global eval_json
+    eval_json["evals"] = lines
+    print("flaflaflask",eval_json)
+
+
+    return make_response(jsonify(eval_json))
     # return json.dumps(eval_json_dash)
     # return jsonify({"language": "python"})
 
@@ -188,4 +200,3 @@ if __name__ == "__main__":
     t1.start()
     t2.start()
     app.run(debug=True)
-    # eval_skelton()
