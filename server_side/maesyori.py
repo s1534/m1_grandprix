@@ -78,9 +78,7 @@ def prepro():
 
             normalize.append(cordinates)
 
-
-        normalize = normalize[:150]
-        print(len(normalize))
+        # print(len(normalize))
 
         positions_avg = [sum(column)/len(normalize) for column in zip(*normalize)]
         positions_var_max = [max(column) for column in zip(*normalize)]

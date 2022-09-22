@@ -1,4 +1,4 @@
-name: flutter_application
+name: audio_player
 description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
@@ -29,10 +29,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  
   fl_chart: ^0.55.1
   http: ^0.13.5
   flutter_svg: ^1.1.5
   charts_flutter: ^0.12.0
+  just_audio: ^0.9.29
+  audioplayers: ^1.0.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -41,6 +44,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -54,6 +58,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
+  assets: 
+    - client_side/flutter_application/assets/audio/
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

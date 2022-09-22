@@ -3,6 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:just_audio/just_audio.dart';
+import 'dart:typed_data';
+import 'package:flutter/services.dart';
 
 class LineChartSample2 extends StatefulWidget {
   const LineChartSample2({Key? key}) : super(key: key);
@@ -19,14 +24,24 @@ class _LineChartSample2State extends State<LineChartSample2> {
   ];
 
   bool showAvg = false;
+  bool flag = false;
 
-  int NUM = 15;
+  int NUM_min = 50;
+  int NUM_sec = 15;
 
   Map<String, dynamic> user = {
     'evals': [0, 20, 40, 60, 80, 100]
   };
 
-  var evals = <FlSpot>[
+  var evals_min = <FlSpot>[
+    // FlSpot(0, 3.44),
+    // FlSpot(10, 3.44),
+    // FlSpot(20, 23),
+    // FlSpot(30, 44),
+    // FlSpot(40, 55),
+    // FlSpot(50, 98),
+  ];
+  var evals_hour = <FlSpot>[
     // FlSpot(0, 3.44),
     // FlSpot(10, 3.44),
     // FlSpot(20, 23),
@@ -44,15 +59,29 @@ class _LineChartSample2State extends State<LineChartSample2> {
       // print(response.body);
 
       setState(() {
+        double sum = 0;
         // data = response.statusCode.toString();
         var user = json.decode(response.body);
-        evals = <FlSpot>[];
-        for (var i = 0; i < NUM; i++) {
+        evals_min = <FlSpot>[];
+        evals_hour = <FlSpot>[];
+        for (var i = 0; i < NUM_min; i++) {
           // print(user['evals'][i]);
-          evals.insert(
+          evals_min.insert(
               i, FlSpot((i * 10).toDouble(), double.parse(user['evals'][i])));
         }
-        print(evals);
+        for (var i = 0; i < NUM_sec; i++) {
+          // print(user['evals'][i]);
+          sum += double.parse(user['evals'][i]);
+          evals_hour.insert(
+              i, FlSpot((i * 10).toDouble(), double.parse(user['evals'][i])));
+        }
+
+        double avg = sum / NUM_sec;
+        print(user['evals']);
+        print(avg);
+        if (avg <= 60) {
+          flag = true;
+        }
       });
     }
     // print('Response status: ${response.statusCode}');
@@ -68,11 +97,11 @@ class _LineChartSample2State extends State<LineChartSample2> {
           backgroundColor: Color(0xff02d39a),
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.autorenew),
-              onPressed: () => setState(() {
-                _callAPI();
-              }),
-            ),
+                icon: Icon(Icons.autorenew),
+                onPressed: () => {
+                      _callAPI(),
+                      if (flag) {_showMyDialog(), flag = false}
+                    }),
           ]),
       // body: RefreshIndicator(
       //   child: LayoutBuilder(
@@ -106,9 +135,39 @@ class _LineChartSample2State extends State<LineChartSample2> {
         child: ListView(children: <Widget>[
           graph_template(),
           description_card(),
-          description_card2(),
         ]),
       ),
+    );
+  }
+
+  Future<void> _showMyDialog() async {
+    return showDialog<void>(
+      // `showDialog`メソッドでダイアログを呼び出す!
+      context: context, //必須の引数
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        //必須の引数
+        return AlertDialog(
+          //`showDialog`メソッドの必須の引数であるbuilder:の戻り値としてAlertDialog()を返す！
+          title: const Text('集中力が不足していませんか？'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: const <Widget>[
+                Text('This is a demo alert dialog.'),
+                Text('Would you like to approve of this message?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Approve'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -168,6 +227,13 @@ class _LineChartSample2State extends State<LineChartSample2> {
     );
   }
 
+  CupertinoAlertDialog _alertBuilderForCupertino() {
+    return CupertinoAlertDialog(
+      title: Text('Alert'),
+      content: Text('This is sample.'),
+    );
+  }
+
   Stack graph_template() {
     return Stack(
       children: <Widget>[
@@ -188,24 +254,24 @@ class _LineChartSample2State extends State<LineChartSample2> {
             ),
           ),
         ),
-        SizedBox(
-          width: 60,
-          height: 34,
-          child: TextButton(
-            onPressed: () {
-              setState(() {
-                showAvg = !showAvg;
-              });
-            },
-            child: Text(
-              'AVG',
-              style: TextStyle(
-                  fontSize: 12,
-                  color:
-                      showAvg ? Colors.black.withOpacity(0.5) : Colors.black),
-            ),
-          ),
-        ),
+        // SizedBox(
+        //   width: 60,
+        //   height: 34,
+        //   child: TextButton(
+        //     onPressed: () {
+        //       setState(() {
+        //         showAvg = !showAvg;
+        //       });
+        //     },
+        //     child: Text(
+        //       'AVG',
+        //       style: TextStyle(
+        //           fontSize: 12,
+        //           color:
+        //               showAvg ? Colors.black.withOpacity(0.5) : Colors.black),
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }
@@ -221,13 +287,13 @@ class _LineChartSample2State extends State<LineChartSample2> {
       case 0:
         text = const Text('15分前', style: style);
         break;
-      case 50:
+      case 160:
         text = const Text('10分前', style: style);
         break;
-      case 100:
+      case 320:
         text = const Text('5分前', style: style);
         break;
-      case 140:
+      case 480:
         text = const Text('0分前', style: style);
         break;
       default:
@@ -272,7 +338,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
         show: true,
         drawVerticalLine: true,
         horizontalInterval: 10,
-        verticalInterval: 10,
+        verticalInterval: 50,
         getDrawingHorizontalLine: (value) {
           return FlLine(
             color: const Color(0xff37434d),
@@ -315,12 +381,12 @@ class _LineChartSample2State extends State<LineChartSample2> {
           show: true,
           border: Border.all(color: const Color(0xff37434d), width: 1)),
       minX: 0,
-      maxX: 140,
+      maxX: 490,
       minY: 0,
-      maxY: 110,
+      maxY: 100,
       lineBarsData: [
         LineChartBarData(
-          spots: evals,
+          spots: evals_min,
           isCurved: false,
           // color: Color(0xff67727d),
           gradient: LinearGradient(
@@ -331,7 +397,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
           barWidth: 5,
           isStrokeCapRound: true,
           dotData: FlDotData(
-            show: true,
+            show: false,
           ),
           belowBarData: BarAreaData(
             show: true,
@@ -354,8 +420,8 @@ class _LineChartSample2State extends State<LineChartSample2> {
       gridData: FlGridData(
         show: true,
         drawHorizontalLine: true,
-        verticalInterval: 1,
-        horizontalInterval: 1,
+        verticalInterval: 10,
+        horizontalInterval: 10,
         getDrawingVerticalLine: (value) {
           return FlLine(
             color: const Color(0xff37434d),
@@ -398,21 +464,13 @@ class _LineChartSample2State extends State<LineChartSample2> {
           show: true,
           border: Border.all(color: const Color(0xff37434d), width: 1)),
       minX: 0,
-      maxX: 30,
+      maxX: 140,
       minY: 0,
-      maxY: 6,
+      maxY: 110,
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 3.44),
-            FlSpot(2.6, 3.44),
-            FlSpot(4.9, 3.44),
-            FlSpot(6.8, 3.44),
-            FlSpot(8, 3.44),
-            FlSpot(9.5, 3.44),
-            FlSpot(11, 3.44),
-          ],
-          isCurved: true,
+          spots: evals_hour,
+          isCurved: false,
           gradient: LinearGradient(
             colors: [
               ColorTween(begin: gradientColors[0], end: gradientColors[1])
