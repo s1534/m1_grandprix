@@ -26,22 +26,13 @@ class _LineChartSample2State extends State<LineChartSample2> {
   };
 
   var evals = <FlSpot>[
-    FlSpot(0, 3.44),
-    FlSpot(10, 3.44),
-    FlSpot(20, 23),
-    FlSpot(30, 44),
-    FlSpot(40, 55),
-    FlSpot(50, 98),
+    // FlSpot(0, 3.44),
+    // FlSpot(10, 3.44),
+    // FlSpot(20, 23),
+    // FlSpot(30, 44),
+    // FlSpot(40, 55),
+    // FlSpot(50, 98),
   ];
-
-  // final List<FlSpot> evals = [
-  //   FlSpot(0, 3.44),
-  //   FlSpot(10, 3.44),
-  //   FlSpot(20, 23),
-  //   FlSpot(30, 44),
-  //   FlSpot(40, 55),
-  //   FlSpot(50, 98),
-  // ];
 
   Future<void> _callAPI() async {
     var url = Uri.parse(
@@ -59,7 +50,6 @@ class _LineChartSample2State extends State<LineChartSample2> {
           // print(user['evals'][i]);
           evals.insert(
               i, FlSpot((i * 10).toDouble(), double.parse(user['evals'][i])));
-          // evals.insert(i,FlSpot((i*10).toDouble(), 98));
         }
         print(evals);
       });
@@ -115,7 +105,36 @@ class _LineChartSample2State extends State<LineChartSample2> {
         child: ListView(children: <Widget>[
           graph_template(),
           description_card(),
+          description_card2(),
         ]),
+      ),
+    );
+  }
+
+  Card description_card2() {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Container(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'testtetst',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '集中レベルをモニタリングすることで，集中の程度を確認できます．集中力が乱れている場合，適度な休憩をとる必要があります．',
+              style: TextStyle(fontSize: 15),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -231,13 +250,13 @@ class _LineChartSample2State extends State<LineChartSample2> {
     String text;
     switch (value.toInt()) {
       case 0:
-        text = '0';
+        text = '0%';
         break;
       case 50:
-        text = '50';
+        text = '50%';
         break;
       case 100:
-        text = '100';
+        text = '100%';
         break;
       default:
         return Container();
