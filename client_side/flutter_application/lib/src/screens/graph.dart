@@ -12,7 +12,8 @@ class LineChartSample2 extends StatefulWidget {
 
 class _LineChartSample2State extends State<LineChartSample2> {
   List<Color> gradientColors = [
-    const Color(0xffffffff),
+    // const Color(0xff1f005c),
+    const Color(0xff02d39a),
     const Color(0xff02d39a),
   ];
 
@@ -48,7 +49,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
     );
     var response = await http.get(url);
     if (response.statusCode == 200) {
-      print(response.body);
+      // print(response.body);
 
       setState(() {
         // data = response.statusCode.toString();
@@ -57,10 +58,10 @@ class _LineChartSample2State extends State<LineChartSample2> {
         for (var i = 0; i < NUM; i++) {
           // print(user['evals'][i]);
           evals.insert(
-              i, FlSpot((i * 10).toDouble(), (user['evals'][i]).toDouble()));
+              i, FlSpot((i * 10).toDouble(), double.parse(user['evals'][i])));
           // evals.insert(i,FlSpot((i*10).toDouble(), 98));
         }
-        // print(evals);
+        print(evals);
       });
     }
     // print('Response status: ${response.statusCode}');
@@ -151,7 +152,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
     return Stack(
       children: <Widget>[
         AspectRatio(
-          aspectRatio: 1.1,
+          aspectRatio: 1,
           child: Container(
             decoration: const BoxDecoration(
                 borderRadius: BorderRadius.all(
@@ -177,7 +178,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
               });
             },
             child: Text(
-              'avg',
+              'AVG',
               style: TextStyle(
                   fontSize: 12,
                   color:
@@ -200,13 +201,13 @@ class _LineChartSample2State extends State<LineChartSample2> {
       case 0:
         text = const Text('15分前', style: style);
         break;
-      case 33:
+      case 50:
         text = const Text('10分前', style: style);
         break;
-      case 66:
+      case 100:
         text = const Text('5分前', style: style);
         break;
-      case 99:
+      case 140:
         text = const Text('0分前', style: style);
         break;
       default:
@@ -294,13 +295,14 @@ class _LineChartSample2State extends State<LineChartSample2> {
           show: true,
           border: Border.all(color: const Color(0xff37434d), width: 1)),
       minX: 0,
-      maxX: 100,
+      maxX: 140,
       minY: 0,
-      maxY: 100,
+      maxY: 110,
       lineBarsData: [
         LineChartBarData(
           spots: evals,
-          isCurved: true,
+          isCurved: false,
+          // color: Color(0xff67727d),
           gradient: LinearGradient(
             colors: gradientColors,
             begin: Alignment.centerLeft,
@@ -309,7 +311,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
           barWidth: 5,
           isStrokeCapRound: true,
           dotData: FlDotData(
-            show: false,
+            show: true,
           ),
           belowBarData: BarAreaData(
             show: true,
