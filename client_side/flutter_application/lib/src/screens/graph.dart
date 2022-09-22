@@ -4,8 +4,6 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
-import 'package:audioplayers/audioplayers.dart';
-import 'package:just_audio/just_audio.dart';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
 
