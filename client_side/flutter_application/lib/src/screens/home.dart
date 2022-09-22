@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'piechart.dart';
 import 'tmp.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -49,7 +50,7 @@ class _HomeScreen extends State<HomeScreen> {
                 _callAPI();
                 // Navigator.push(
                 //   context,
-                //   MaterialPageRoute(builder: (context) => NextPage()),
+                //   MaterialPageRoute(builder: (context) => PieChartSample3()),
                 // );
               },
             ),

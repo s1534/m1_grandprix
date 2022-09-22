@@ -1,5 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -444,6 +445,82 @@ class _LineChartSample2State extends State<LineChartSample2> {
           ),
         ),
       ],
+    );
+  }
+
+  PieChart aiueo() {
+    return PieChart(
+      PieChartData(
+        startDegreeOffset: 270,
+        sections: [
+          PieChartSectionData(
+              borderSide: BorderSide(color: Colors.black, width: 1),
+              color: Colors.white,
+              value: 2 / 24 * 100,
+              titlePositionPercentageOffset: 0.7,
+              title: "ゲーム\nテレビ",
+              titleStyle: TextStyle(fontSize: 10),
+              radius: 160),
+          PieChartSectionData(
+              borderSide: BorderSide(color: Colors.black, width: 1),
+              color: Colors.white,
+              value: 1 / 24 * 100,
+              titlePositionPercentageOffset: 0.8,
+              titleStyle: TextStyle(fontSize: 10),
+              title: "寝る\n準備",
+              radius: 160),
+          PieChartSectionData(
+              borderSide: BorderSide(color: Colors.black, width: 1),
+              color: Colors.white,
+              value: 7 / 24 * 100,
+              titlePositionPercentageOffset: 0.5,
+              title: "眠",
+              titleStyle: TextStyle(fontSize: 10),
+              radius: 160),
+          PieChartSectionData(
+              borderSide: BorderSide(color: Colors.black, width: 1),
+              color: Colors.white,
+              value: 2 / 24 * 100,
+              titleStyle: TextStyle(fontSize: 10),
+              titlePositionPercentageOffset: 0.7,
+              title: "朝ご飯\nテレビ",
+              radius: 160),
+          PieChartSectionData(
+              borderSide: BorderSide(color: Colors.black, width: 1),
+              color: Colors.white,
+              value: 4 / 24 * 100,
+              title: "?",
+              titleStyle: TextStyle(fontSize: 60),
+              titlePositionPercentageOffset: 0.7,
+              radius: 160),
+          PieChartSectionData(
+              borderSide: BorderSide(color: Colors.black, width: 1),
+              color: Colors.white,
+              value: 2 / 24 * 100,
+              title: "散歩",
+              titleStyle: TextStyle(fontSize: 10),
+              titlePositionPercentageOffset: 0.7,
+              radius: 160),
+          PieChartSectionData(
+              borderSide: BorderSide(color: Colors.black, width: 1),
+              color: Colors.white,
+              value: 1 / 24 * 100,
+              title: "晩御飯",
+              titleStyle: TextStyle(fontSize: 10),
+              titlePositionPercentageOffset: 0.7,
+              radius: 160),
+          PieChartSectionData(
+              borderSide: BorderSide(color: Colors.black, width: 1),
+              color: Colors.white,
+              value: 5 / 24 * 100,
+              title: "家での自由時間\nテレビ\n漫画\nゲーム\nラジオ",
+              titleStyle: TextStyle(fontSize: 10),
+              titlePositionPercentageOffset: 0.6,
+              radius: 160),
+        ],
+        sectionsSpace: 0,
+        centerSpaceRadius: 0,
+      ),
     );
   }
 }
