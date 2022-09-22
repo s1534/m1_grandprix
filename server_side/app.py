@@ -1,5 +1,5 @@
-from PyNuitrack import py_nuitrack
-import PyNuitrack
+# from PyNuitrack import py_nuitrack
+# import PyNuitrack
 import sys
 import cv2
 from itertools import cycle
@@ -15,7 +15,7 @@ from pdb import set_trace
 import datetime
 from threading import Event, Thread
 import os
-import setproctitle
+# import setproctitle
 from flask import Flask, render_template, request, make_response, jsonify,g
 import maesyori
 import pandas as pd
@@ -27,7 +27,7 @@ app = Flask(__name__)
 
 
 # process name
-setproctitle.setproctitle("rs_marunasu2022")
+# setproctitle.setproctitle("rs_marunasu2022")
 # Setting CSV limit
 CSV_ROW_NUM = 150
 
@@ -194,9 +194,9 @@ def tmp():
 
 
 if __name__ == "__main__":
-    t1 = Thread(target=run)
-    t2 = Thread(target=skeleton_save)
+    # t1 = Thread(target=run)
+    # t2 = Thread(target=skeleton_save)
 
-    t1.start()
-    t2.start()
+    # t1.start()
+    # t2.start()
     app.run(debug=True)
