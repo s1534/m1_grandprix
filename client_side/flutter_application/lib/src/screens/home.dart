@@ -85,6 +85,8 @@ class _HomeScreen extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         // title: Text(widget.title),
+        backgroundColor: Color(0xff02d39a),
+
       ),
       body: Center(
         child: Column(
