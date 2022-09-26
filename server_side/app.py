@@ -113,7 +113,7 @@ def run():
         for i, dev in enumerate(devices):
             print(dev.get_name(), dev.get_serial_number())
             if i == 0:
-                dev.activate("license:40319:HcjLYX5Bj5QEqBSX") #you can activate device using python api
+                dev.activate("") #you can activate device using python api
                 print(dev.get_activation())
                 nuitrack.set_device(dev)
 
