@@ -16,28 +16,29 @@ import datetime
 from threading import Event, Thread
 import os
 import setproctitle
-from flask import Flask, render_template, request, make_response, jsonify,g
+from flask import Flask, render_template, request, make_response, jsonify, g
 import maesyori
 import pandas as pd
 import pickle
 from collections import deque
 import json
+from dotenv import load_dotenv
+import boto3
 
 app = Flask(__name__)
-
 
 # process name
 setproctitle.setproctitle("m1_grandprix")
 # Setting CSV limit
 CSV_ROW_NUM = 150
 
-skeleton_list=[]
-skeleton_list_out=[]
+skeleton_list = []
+skeleton_list_out = []
 event = Event()
 
 eval_json = {
-    "evals" :[
-        0,20,40,60,80,100
+    "evals": [
+        0, 20, 40, 60, 80, 100
     ]
 }
 # aiueo = 1111111110
@@ -48,24 +49,17 @@ values = [0] * 50
 evals = deque(values)
 
 file = 'server_side/train_model/trained_model.pkl'
-random_forest_model = pickle.load(open(file,'rb'))
+random_forest_model = pickle.load(open(file, 'rb'))
 
 
-def eval_skelton():
-    global eval_json
-    global evals
-    print('ここまでのものを評価します')
-    df = pd.read_csv(r"server_side/test_data/sample.csv")
-    test_x = df.drop(['action_label'],axis=1)
-    predict = random_forest_model.predict(test_x)
-    evals.append(predict[0])
-    evals.popleft()
-    eval_json["evals"] = list(evals)
-    # print("更新しました",eval_json)
+def upload_csv():
+    load_dotenv()
+    client = boto3.client('s3')
 
-    with open('server_side/tmp.txt', 'w') as f:
-        for d in eval_json["evals"]:
-            f.write("%s\n" % d)
+    Filename = 'test_data/sample.csv'
+    Bucket = 'm1gp-mishima'
+    Key = 'test.csv'
+    client.upload_file(Filename, Bucket, Key)
 
 
 def skeleton_save():
@@ -79,24 +73,13 @@ def skeleton_save():
         event.clear()
 
         timestamp = datetime.datetime.now()
-        # csv_dirname = "server_side/skelton_csv" + timestamp.strftime("%Y%m%d")
         csv_dirname = "server_side/skelton_csv"
-        # if not os.path.exists(csv_dirname):
-        #     os.makedirs(csv_dirname)
         csv_filename = timestamp.strftime("%Y%m%d_%H%M%S")
-        # print("csv export ...", csv_dirname + "/rsdata_" + csv_filename + ".csv")
-        # with open("{}/data_set.csv".format(csv_dirname, csv_filename), 'w') as file:
-        #     w = csv.writer(file, lineterminator='\n')
-        #     w.writerows(skeleton_list_out)
         df = pd.DataFrame(skeleton_list_out)
-        # df = df.drop(df.columns[0],axis = 1)
-        # df = df.drop(df.index[0],axis = 0)
 
-        df.to_excel('server_side/skelton_csv/dataset.xlsx',index=False, header=False)
-
+        df.to_excel('server_side/skelton_csv/dataset.xlsx',
+                    index=False, header=False)
         maesyori.main()
-        eval_skelton()
-        print("aaaaaaaaaaaaa",eval_json)
 
 
 def run():
@@ -108,15 +91,13 @@ def run():
 
         # Change number of userID
         nuitrack.set_config_value("Skeletonization.ActiveUsers", "1")
-
         devices = nuitrack.get_device_list()
         for i, dev in enumerate(devices):
             print(dev.get_name(), dev.get_serial_number())
             if i == 0:
-                dev.activate("") #you can activate device using python api
+                dev.activate("")  # you can activate device using python api
                 print(dev.get_activation())
                 nuitrack.set_device(dev)
-
         nuitrack.create_modules()
         nuitrack.run()
 
@@ -132,7 +113,8 @@ def run():
             img_depth = nuitrack.get_depth_data()
             if img_depth.size:
                 cv2.normalize(img_depth, img_depth, 0, 255, cv2.NORM_MINMAX)
-                img_depth = np.array(cv2.cvtColor(img_depth,cv2.COLOR_GRAY2RGB), dtype=np.uint8)
+                img_depth = np.array(cv2.cvtColor(
+                    img_depth, cv2.COLOR_GRAY2RGB), dtype=np.uint8)
                 img_color = nuitrack.get_color_data()
                 point_color = (59, 164, 0)
                 timestamp = datetime.datetime.now()
@@ -169,28 +151,6 @@ def run():
 
     except Exception as ex:
         print_exc()
-
-
-@app.route('/')
-def index():
-    return 'Hello World'
-
-
-@app.route('/model')
-def tmp():
-    with open('server_side/tmp.txt') as f:
-        lines = f.readlines()
-
-        lines = [line.rstrip('\n') for line in lines]
-    global eval_json
-    eval_json["evals"] = lines
-    print("flaflaflask",eval_json)
-
-
-    return make_response(jsonify(eval_json))
-    # return json.dumps(eval_json_dash)
-    # return jsonify({"language": "python"})
-
 
 
 if __name__ == "__main__":
