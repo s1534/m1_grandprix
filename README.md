@@ -9,4 +9,4 @@ Realsense L515とNUITRACK SDKにより，デスク作業中のユーザの関節
 
 # システムの流れ
 集中力がある一定の閾値を下回っていると，音楽を流して集中を促す
-![システムの流れ](img/flow.png)
+![システムの流れ](img/system_function.png)
