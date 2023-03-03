@@ -131,7 +131,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
 
   Future<void> _callAPI() async {
     var url = Uri.parse(
-      'http://10.0.2.2:5000/model',
+      'http://18.179.198.146:8080/model',
     );
     var response = await http.get(url);
     if (response.statusCode == 200) {
